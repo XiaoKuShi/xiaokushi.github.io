@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>高飞翔</title>
+  
+  <subtitle>I Believe I Can Fly</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2018-12-20T06:23:19.544Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>GaoSir_</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Swift Playgrounds - Book 生成规则</title>
+    <link href="http://yoursite.com/2018/12/20/SwiftPlaygrounds_Book/"/>
+    <id>http://yoursite.com/2018/12/20/SwiftPlaygrounds_Book/</id>
+    <published>2018-12-20T05:59:47.000Z</published>
+    <updated>2018-12-20T06:23:19.544Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>《Swift Playgrounds》是一款iPad平台的应用开发工具，提供了可视化的编程形式，支持所见即所得，同时应用具备高亮提示功能。对于Swift初学者来说，它简单易用，可以实时预览代码效果，非常适合学习Swift这门语言。今天，我们先记录一些开发Swift playground应用的规则。</p><blockquote><p>参考<br><a href="https://developer.apple.com/library/content/documentation/Xcode/Conceptual/swift_playgrounds_doc_format/index.html" target="_blank" rel="noopener">官方文档</a><br><a href="https://devimages-cdn.apple.com/swift-playgrounds/subscriptions/index.html#gallery" target="_blank" rel="noopener">第三方案例</a></p></blockquote></blockquote><h3 id="一、Annotations-注释"><a href="#一、Annotations-注释" class="headerlink" title="一、Annotations 注释"></a>一、Annotations 注释</h3><h5 id="1-单行标记"><a href="#1-单行标记" class="headerlink" title="1. 单行标记"></a>1. 单行标记</h5><p><code>//:</code> </p><h5 id="2-块标记"><a href="#2-块标记" class="headerlink" title="2. 块标记"></a>2. 块标记</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*:</span></span><br><span class="line"><span class="comment">    line of text with optional markup</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure><h5 id="3-本地化标记"><a href="#3-本地化标记" class="headerlink" title="3. 本地化标记"></a>3. 本地化标记</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//:#localized(key: "FirstProseBlock")</span></span><br></pre></td></tr></table></figure><ul><li>需要<code>PrivateResources</code>文件夹中的每个本地化文件夹中都有一个<code>Prose.strings</code>文件。</li><li><code>Prose.strings</code>文件中内容格式</li></ul><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* First block of prose for the page */</span></span><br><span class="line"><span class="string">"FirstProseBlock"</span>=<span class="string">"Caring for a llama can be a challenging, but rewarding, experience."</span>;</span><br></pre></td></tr></table></figure><h5 id="4-单行可编辑区域"><a href="#4-单行可编辑区域" class="headerlink" title="4. 单行可编辑区域"></a>4. 单行可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*#-editable-code placeholder text*/</span>content<span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure><ul><li><code>content</code>为空时，显示占位符内容</li><li><code>content</code>区域用户可以编辑</li><li>如果只允许用户编辑字符串，格式如下</li></ul><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*#-editable-code*/</span><span class="string">"content"</span><span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure><h5 id="5-多行可编辑区域"><a href="#5-多行可编辑区域" class="headerlink" title="5. 多行可编辑区域"></a>5. 多行可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-editable-code placeholder text</span></span><br><span class="line">content</span><br><span class="line">…</span><br><span class="line"><span class="comment">//#-end-editable-code</span></span><br></pre></td></tr></table></figure><ul><li>该注释的格式要遵守代码书写格式，与上下文缩进格式相同，如：</li></ul><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> ... <span class="number">10</span> &#123;</span><br><span class="line">    <span class="comment">//#-editable-code Tap to write your code</span></span><br><span class="line">    <span class="comment">//#-end-editable-code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h5 id="6-锁定可编辑区域"><a href="#6-锁定可编辑区域" class="headerlink" title="6. 锁定可编辑区域"></a>6. 锁定可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-editable-code</span></span><br><span class="line">x += <span class="number">4</span></span><br><span class="line"><span class="comment">//#-end-editable-code</span></span><br></pre></td></tr></table></figure><h5 id="7-占位符可选类型"><a href="#7-占位符可选类型" class="headerlink" title="7. 占位符可选类型"></a>7. 占位符可选类型</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;#placeholder name#&gt;</span><br><span class="line">&lt;#<span class="type">T</span>##placeholder name##type#&gt;</span><br></pre></td></tr></table></figure><ul><li>可以使用swift中的数据类型，如</li></ul><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> typedLlamaCount = <span class="comment">/*#-editable-code*/</span>&lt;#<span class="type">T</span>##number of llamas##<span class="type">Int</span>#&gt;<span class="comment">/*#-end-editable-code*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> typedLlamaCount = <span class="comment">/*#-editable-code*/</span>&lt;#<span class="type">T</span>##number of llamas##<span class="type">Date</span>#&gt;<span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure><h5 id="8-隐藏代码"><a href="#8-隐藏代码" class="headerlink" title="8. 隐藏代码"></a>8. 隐藏代码</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-hidden-code</span></span><br><span class="line">line of code </span><br><span class="line">...</span><br><span class="line"><span class="comment">//#-end-hidden-code</span></span><br></pre></td></tr></table></figure><ul><li>隐藏代码中的内容用户可用，只是看不见</li></ul><h5 id="9-底部快捷栏"><a href="#9-底部快捷栏" class="headerlink" title="9. 底部快捷栏"></a>9. 底部快捷栏</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-code-completion(everything, hide)</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, show, moveForward(), turnLeft(), collectGem(), toggleSwitch())</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, hide, turnLeft())</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, show, turnRight())</span></span><br><span class="line"><span class="comment">//#-code-completion(keyword, for)</span></span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;《Swift Playgrounds》是一款iPad平台的应用开发工具，提供了可视化的编程形式，支持所见即所得，同时应用具备高亮提示功能。对于Swift初学者来说，它简单易用，可以实时预览代码效果，非常适合学习Swift这门语言。今天，我们先记录一
+      
+    
+    </summary>
+    
+      <category term="Swift" scheme="http://yoursite.com/categories/Swift/"/>
+    
+    
+      <category term="iOS" scheme="http://yoursite.com/tags/iOS/"/>
+    
+      <category term="Swift" scheme="http://yoursite.com/tags/Swift/"/>
+    
+      <category term="iPad" scheme="http://yoursite.com/tags/iPad/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2018.12.19</title>
+    <link href="http://yoursite.com/2018/12/19/2018-12-20/"/>
+    <id>http://yoursite.com/2018/12/19/2018-12-20/</id>
+    <published>2018-12-19T14:00:00.000Z</published>
+    <updated>2018-12-20T03:51:35.616Z</updated>
+    
+    <content type="html"><![CDATA[<p>大家好</p><p>初次见面，请多多关照</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;大家好&lt;/p&gt;
+&lt;p&gt;初次见面，请多多关照&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+      <category term="随笔" scheme="http://yoursite.com/categories/%E9%9A%8F%E7%AC%94/"/>
+    
+    
+      <category term="初次见面" scheme="http://yoursite.com/tags/%E5%88%9D%E6%AC%A1%E8%A7%81%E9%9D%A2/"/>
+    
+  </entry>
+  
+</feed>
