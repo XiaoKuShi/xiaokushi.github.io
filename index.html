@@ -502,44 +502,23 @@
       
         
           
-            <blockquote>
-<p><code>CALayer</code>和<code>CAAnimation</code>都实现了<code>CAMediaTiming</code> 协议，可以通过<code>CALayer</code>实现协议中的属性来控制动画</p>
-</blockquote>
-<h4 id="1-系统时间"><a href="#1-系统时间" class="headerlink" title="1. 系统时间"></a>1. 系统时间</h4><ul>
-<li>从手机开机到此刻硬件运行的时间秒数，也就是开机时长。</li>
-<li>通过<code>CFTimeInterval  time = CACurrentMediaTime()</code>获取</li>
-</ul>
-<h4 id="2-动画系统时间"><a href="#2-动画系统时间" class="headerlink" title="2. 动画系统时间"></a>2. 动画系统时间</h4><ul>
-<li>它是一套独立的时间</li>
-<li>一个动画对象动画时间是基于其父对象的动画时间来计算的</li>
-<li>动画时间与系统时间如何对应关系如下：</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t = (tp - begin) * speed + timeOffset</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>t</code>: 对象的动画时间</li>
-<li><code>tp</code>: 父对象的动画时间</li>
-<li><code>begin</code>:  <code>t.beginTime</code></li>
-<li>默认情况下，<code>speed = 1, begin = 0, timeOffset = 0</code></li>
-</ul>
-<h4 id="3-测试"><a href="#3-测试" class="headerlink" title="3.  测试"></a>3.  测试</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CALayer</span> * layer1 = [<span class="type">CALayer</span> layer];</span><br><span class="line">[<span class="keyword">self</span>.view.layer addSublayer: layer1];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父对象时间</span></span><br><span class="line"><span class="type">CFTimeInterval</span> time1 = <span class="type">CACurrentMediaTime</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将父对象时间转化为子对象时间</span></span><br><span class="line"><span class="type">CFTimeInterval</span> time2 = [layer1 convertTime: time1 fromLayer: <span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"systemTime - %lf"</span>, time1);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layerTime - %lf"</span>, time2);</span><br><span class="line">`</span><br></pre></td></tr></table></figure>
-<p>打印下面两个值，结果相等。默认情况下，动画系统的时间是和系统时间同步的</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CALayer</span> * layer1 = [<span class="type">CALayer</span> layer];</span><br><span class="line">layer1.beginTime = <span class="number">1</span>;</span><br><span class="line">[<span class="keyword">self</span>.view.layer addSublayer:layer1];</span><br><span class="line">    </span><br><span class="line"><span class="type">CALayer</span> * layer2 = [<span class="type">CALayer</span> layer];</span><br><span class="line">layer2.beginTime = <span class="number">1</span>;</span><br><span class="line">[layer1 addSublayer:layer2];</span><br><span class="line">    </span><br><span class="line"><span class="type">CFTimeInterval</span> time1 = <span class="type">CACurrentMediaTime</span>();</span><br><span class="line"><span class="type">CFTimeInterval</span> time2 = [layer1 convertTime:time1 fromLayer:<span class="literal">nil</span>];</span><br><span class="line"><span class="type">CFTimeInterval</span> time3 = [layer2 convertTime:time1 fromLayer:<span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"systemTime - %lf"</span>, time1);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layer1Time - %lf"</span>, time2);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layer2Time - %lf"</span>, time3);</span><br></pre></td></tr></table></figure>
-<p>打印结果，<code>layer1Time</code>比<code>systemTime</code>多1秒，<code>layer2Time</code>比<code>systemTime</code>多2秒<br>分析：</p>
-<ul>
-<li><code>layer1.beginTime = 1;</code>即相对于系统时间加了1秒</li>
-<li><code>layer2.beginTime = 1;</code>，相对于<code>layer1</code>(<code>layer1</code>是<code>layer2</code>的父对象)的时间增加了1秒，也就是比系统时间多了2秒</li>
-</ul>
-<h4 id="4-控制动画"><a href="#4-控制动画" class="headerlink" title="4. 控制动画"></a>4. 控制动画</h4><ul>
-<li>暂停动画</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> pausedTime      = layer.convertTime(<span class="type">CACurrentMediaTime</span>(), from: <span class="literal">nil</span>)</span><br><span class="line">layer.speed         = <span class="number">0</span></span><br><span class="line">layer.timeOffset    = pausedTime</span><br></pre></td></tr></table></figure>
-<ul>
-<li>开始动画</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> pausedTime      = layer.timeOffset</span><br><span class="line">layer.speed         = <span class="number">1.0</span></span><br><span class="line">layer.timeOffset    = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> timeSincePause  = layer.convertTime(<span class="type">CACurrentMediaTime</span>(), from: <span class="literal">nil</span>) - pausedTime</span><br><span class="line">layer.beginTime     = timeSincePause</span><br></pre></td></tr></table></figure>
-<h4 id="5-参考文章"><a href="#5-参考文章" class="headerlink" title="5. 参考文章:"></a>5. 参考文章:</h4><p><a href="https://www.jianshu.com/p/fb088f8ddb4e" target="_blank" rel="noopener">动画的时间系统 - beginTime timeOffset属性</a></p>
-
           
+CALayer和CAAnimation都实现了CAMediaTiming 协议，可以通过CALayer实现协议中的属性来控制动画
+
+1. 系统时间
+从手机开机到此刻硬件运行的时间秒数，也就是开机时长。
+通过CFTimeInterval  time = CACurrentMediaTime()获取
+
+          ...
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/12/20/ios_CALayer_animateControl/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -697,44 +676,18 @@
       
         
           
-            <blockquote>
-<p>《Swift Playgrounds》是一款iPad平台的应用开发工具，提供了可视化的编程形式，支持所见即所得，同时应用具备高亮提示功能。对于Swift初学者来说，它简单易用，可以实时预览代码效果，非常适合学习Swift这门语言。今天，我们先记录一些开发Swift playground应用的规则。</p>
-<blockquote>
-<p>参考<br><a href="https://developer.apple.com/library/content/documentation/Xcode/Conceptual/swift_playgrounds_doc_format/index.html" target="_blank" rel="noopener">官方文档</a><br><a href="https://devimages-cdn.apple.com/swift-playgrounds/subscriptions/index.html#gallery" target="_blank" rel="noopener">第三方案例</a></p>
-</blockquote>
-</blockquote>
-<h3 id="一、Annotations-注释"><a href="#一、Annotations-注释" class="headerlink" title="一、Annotations 注释"></a>一、Annotations 注释</h3><h5 id="1-单行标记"><a href="#1-单行标记" class="headerlink" title="1. 单行标记"></a>1. 单行标记</h5><p><code>//:</code> </p>
-<h5 id="2-块标记"><a href="#2-块标记" class="headerlink" title="2. 块标记"></a>2. 块标记</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*:</span></span><br><span class="line"><span class="comment">    line of text with optional markup</span></span><br><span class="line"><span class="comment">    ...</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
-<h5 id="3-本地化标记"><a href="#3-本地化标记" class="headerlink" title="3. 本地化标记"></a>3. 本地化标记</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//:#localized(key: "FirstProseBlock")</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>需要<code>PrivateResources</code>文件夹中的每个本地化文件夹中都有一个<code>Prose.strings</code>文件。</li>
-<li><code>Prose.strings</code>文件中内容格式</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* First block of prose for the page */</span></span><br><span class="line"><span class="string">"FirstProseBlock"</span>=<span class="string">"Caring for a llama can be a challenging, but rewarding, experience."</span>;</span><br></pre></td></tr></table></figure>
-<h5 id="4-单行可编辑区域"><a href="#4-单行可编辑区域" class="headerlink" title="4. 单行可编辑区域"></a>4. 单行可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*#-editable-code placeholder text*/</span>content<span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>content</code>为空时，显示占位符内容</li>
-<li><code>content</code>区域用户可以编辑</li>
-<li>如果只允许用户编辑字符串，格式如下</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*#-editable-code*/</span><span class="string">"content"</span><span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure>
-<h5 id="5-多行可编辑区域"><a href="#5-多行可编辑区域" class="headerlink" title="5. 多行可编辑区域"></a>5. 多行可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-editable-code placeholder text</span></span><br><span class="line">content</span><br><span class="line">…</span><br><span class="line"><span class="comment">//#-end-editable-code</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>该注释的格式要遵守代码书写格式，与上下文缩进格式相同，如：</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> ... <span class="number">10</span> &#123;</span><br><span class="line">    <span class="comment">//#-editable-code Tap to write your code</span></span><br><span class="line">    <span class="comment">//#-end-editable-code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="6-锁定可编辑区域"><a href="#6-锁定可编辑区域" class="headerlink" title="6. 锁定可编辑区域"></a>6. 锁定可编辑区域</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-editable-code</span></span><br><span class="line">x += <span class="number">4</span></span><br><span class="line"><span class="comment">//#-end-editable-code</span></span><br></pre></td></tr></table></figure>
-<h5 id="7-占位符可选类型"><a href="#7-占位符可选类型" class="headerlink" title="7. 占位符可选类型"></a>7. 占位符可选类型</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;#placeholder name#&gt;</span><br><span class="line">&lt;#<span class="type">T</span>##placeholder name##type#&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>可以使用swift中的数据类型，如</li>
-</ul>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> typedLlamaCount = <span class="comment">/*#-editable-code*/</span>&lt;#<span class="type">T</span>##number of llamas##<span class="type">Int</span>#&gt;<span class="comment">/*#-end-editable-code*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> typedLlamaCount = <span class="comment">/*#-editable-code*/</span>&lt;#<span class="type">T</span>##number of llamas##<span class="type">Date</span>#&gt;<span class="comment">/*#-end-editable-code*/</span></span><br></pre></td></tr></table></figure>
-<h5 id="8-隐藏代码"><a href="#8-隐藏代码" class="headerlink" title="8. 隐藏代码"></a>8. 隐藏代码</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-hidden-code</span></span><br><span class="line">line of code </span><br><span class="line">...</span><br><span class="line"><span class="comment">//#-end-hidden-code</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>隐藏代码中的内容用户可用，只是看不见</li>
-</ul>
-<h5 id="9-底部快捷栏"><a href="#9-底部快捷栏" class="headerlink" title="9. 底部快捷栏"></a>9. 底部快捷栏</h5><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//#-code-completion(everything, hide)</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, show, moveForward(), turnLeft(), collectGem(), toggleSwitch())</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, hide, turnLeft())</span></span><br><span class="line"><span class="comment">//#-code-completion(identifier, show, turnRight())</span></span><br><span class="line"><span class="comment">//#-code-completion(keyword, for)</span></span><br></pre></td></tr></table></figure>
           
+《Swift Playgrounds》是一款iPad平台的应用开发工具，提供了可视化的编程形式，支持所见即所得，同时应用具备高亮提示功能。对于Swift初学者来说，它简单易用，可以实时预览代码效果，非常适合学习Swift这门语言。今天，我们先记录一些开发Swift playground应用的规则。
+          ...
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/12/20/SwiftPlaygrounds_Book/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -904,7 +857,7 @@
           
           
             <div class="post-gallery-row">
-              <a class="post-gallery-img fancybox" href="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" rel="gallery_cjpw904q600006o8hiqdhrzql" itemscope="" itemtype="http://schema.org/ImageObject" itemprop="url">
+              <a class="post-gallery-img fancybox" href="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" rel="gallery_cjpw9caqb0000aj8hpv0648bp" itemscope="" itemtype="http://schema.org/ImageObject" itemprop="url">
                 <img src="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" itemprop="contentUrl">
               </a>
             
@@ -918,10 +871,19 @@
       
         
           
-            <p>大家好</p>
-<p>初次见面，请多多关照</p>
+          大家好
+初次见面，请多多关照
 
           
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/12/19/2018-12-20/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -1083,7 +1045,7 @@
                   
                     
                   
-                  <a href="/gaofeixiangzzhn@gmail.com" title="E-Mail &rarr; gaofeixiangzzhn@gmail.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  <a href="mailto:gaofeixiangzzhn@gmail.com" title="E-Mail &rarr; mailto:gaofeixiangzzhn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
                 </span>
               
                 <span class="links-of-author-item">
