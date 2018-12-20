@@ -399,6 +399,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/20/ios_CALayer_animateControl/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="GaoSir_">
+      <meta itemprop="description" content="这是◎高飞翔◎的个人博客">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="高飞翔">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/12/20/ios_CALayer_animateControl/" class="post-title-link" itemprop="http://yoursite.com/index.html">CALayer 控制动画开始和暂停</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-12-20 14:28:43 / Modified: 14:51:30" itemprop="dateCreated datePublished" datetime="2018-12-20T14:28:43+08:00">2018-12-20</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p><code>CALayer</code>和<code>CAAnimation</code>都实现了<code>CAMediaTiming</code> 协议，可以通过<code>CALayer</code>实现协议中的属性来控制动画</p>
+</blockquote>
+<h4 id="1-系统时间"><a href="#1-系统时间" class="headerlink" title="1. 系统时间"></a>1. 系统时间</h4><ul>
+<li>从手机开机到此刻硬件运行的时间秒数，也就是开机时长。</li>
+<li>通过<code>CFTimeInterval  time = CACurrentMediaTime()</code>获取</li>
+</ul>
+<h4 id="2-动画系统时间"><a href="#2-动画系统时间" class="headerlink" title="2. 动画系统时间"></a>2. 动画系统时间</h4><ul>
+<li>它是一套独立的时间</li>
+<li>一个动画对象动画时间是基于其父对象的动画时间来计算的</li>
+<li>动画时间与系统时间如何对应关系如下：</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t = (tp - begin) * speed + timeOffset</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>t</code>: 对象的动画时间</li>
+<li><code>tp</code>: 父对象的动画时间</li>
+<li><code>begin</code>:  <code>t.beginTime</code></li>
+<li>默认情况下，<code>speed = 1, begin = 0, timeOffset = 0</code></li>
+</ul>
+<h4 id="3-测试"><a href="#3-测试" class="headerlink" title="3.  测试"></a>3.  测试</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CALayer</span> * layer1 = [<span class="type">CALayer</span> layer];</span><br><span class="line">[<span class="keyword">self</span>.view.layer addSublayer: layer1];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取父对象时间</span></span><br><span class="line"><span class="type">CFTimeInterval</span> time1 = <span class="type">CACurrentMediaTime</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将父对象时间转化为子对象时间</span></span><br><span class="line"><span class="type">CFTimeInterval</span> time2 = [layer1 convertTime: time1 fromLayer: <span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"systemTime - %lf"</span>, time1);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layerTime - %lf"</span>, time2);</span><br><span class="line">`</span><br></pre></td></tr></table></figure>
+<p>打印下面两个值，结果相等。默认情况下，动画系统的时间是和系统时间同步的</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">CALayer</span> * layer1 = [<span class="type">CALayer</span> layer];</span><br><span class="line">layer1.beginTime = <span class="number">1</span>;</span><br><span class="line">[<span class="keyword">self</span>.view.layer addSublayer:layer1];</span><br><span class="line">    </span><br><span class="line"><span class="type">CALayer</span> * layer2 = [<span class="type">CALayer</span> layer];</span><br><span class="line">layer2.beginTime = <span class="number">1</span>;</span><br><span class="line">[layer1 addSublayer:layer2];</span><br><span class="line">    </span><br><span class="line"><span class="type">CFTimeInterval</span> time1 = <span class="type">CACurrentMediaTime</span>();</span><br><span class="line"><span class="type">CFTimeInterval</span> time2 = [layer1 convertTime:time1 fromLayer:<span class="literal">nil</span>];</span><br><span class="line"><span class="type">CFTimeInterval</span> time3 = [layer2 convertTime:time1 fromLayer:<span class="literal">nil</span>];</span><br><span class="line"></span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"systemTime - %lf"</span>, time1);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layer1Time - %lf"</span>, time2);</span><br><span class="line"><span class="type">NSLog</span>(@<span class="string">"layer2Time - %lf"</span>, time3);</span><br></pre></td></tr></table></figure>
+<p>打印结果，<code>layer1Time</code>比<code>systemTime</code>多1秒，<code>layer2Time</code>比<code>systemTime</code>多2秒<br>分析：</p>
+<ul>
+<li><code>layer1.beginTime = 1;</code>即相对于系统时间加了1秒</li>
+<li><code>layer2.beginTime = 1;</code>，相对于<code>layer1</code>(<code>layer1</code>是<code>layer2</code>的父对象)的时间增加了1秒，也就是比系统时间多了2秒</li>
+</ul>
+<h4 id="4-控制动画"><a href="#4-控制动画" class="headerlink" title="4. 控制动画"></a>4. 控制动画</h4><ul>
+<li>暂停动画</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> pausedTime      = layer.convertTime(<span class="type">CACurrentMediaTime</span>(), from: <span class="literal">nil</span>)</span><br><span class="line">layer.speed         = <span class="number">0</span></span><br><span class="line">layer.timeOffset    = pausedTime</span><br></pre></td></tr></table></figure>
+<ul>
+<li>开始动画</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> pausedTime      = layer.timeOffset</span><br><span class="line">layer.speed         = <span class="number">1.0</span></span><br><span class="line">layer.timeOffset    = <span class="number">0</span></span><br><span class="line"><span class="keyword">let</span> timeSincePause  = layer.convertTime(<span class="type">CACurrentMediaTime</span>(), from: <span class="literal">nil</span>) - pausedTime</span><br><span class="line">layer.beginTime     = timeSincePause</span><br></pre></td></tr></table></figure>
+<h4 id="5-参考文章"><a href="#5-参考文章" class="headerlink" title="5. 参考文章:"></a>5. 参考文章:</h4><p><a href="https://www.jianshu.com/p/fb088f8ddb4e" target="_blank" rel="noopener">动画的时间系统 - beginTime timeOffset属性</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/20/SwiftPlaygrounds_Book/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -709,7 +904,7 @@
           
           
             <div class="post-gallery-row">
-              <a class="post-gallery-img fancybox" href="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" rel="gallery_cjpw7zlck00001y8hh2anmu2s" itemscope="" itemtype="http://schema.org/ImageObject" itemprop="url">
+              <a class="post-gallery-img fancybox" href="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" rel="gallery_cjpw904q600006o8hiqdhrzql" itemscope="" itemtype="http://schema.org/ImageObject" itemprop="url">
                 <img src="https://upload-images.jianshu.io/upload_images/233837-bf093ae9a6841809.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" itemprop="contentUrl">
               </a>
             
@@ -811,7 +1006,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
